@@ -41,6 +41,22 @@ class BinaryHeap():
             self.swap(parent, index)
             self.bubble(parent)
 
+    def bubble_down(self, index):
+        l_child = 2 * index + 1
+        if l_child < self.len and not self.heap_condition(index, l_child):
+            self.swap(index, l_child)
+            index = l_child
+            if l_child + 1 < self.len and not self.heap_condition(l_child, l_child + 1):
+                self.swap(l_child, l_child + 1)
+                index = l_child + 1
+                self.bubble_down(index)
+
+    def pop(self):
+        cur = self.heap[0]
+        self.len -= 1
+        self.heap = self.heap[1:]
+        return cur
+
     def push(self, elements):
         if type(elements) == list:
             for element in elements:
@@ -65,7 +81,7 @@ class BinaryHeap():
         offset = 2 ** (np.ceil(np.log2(self.len + 1))) * 2 * BinaryHeap.radius
         cur_off = offset
         visited = []
-        for index, node in enumerate(self.heap):
+        for index in range(self.len):
             if index in visited:
                 continue
             parent = (index - 1) // 2
@@ -115,6 +131,14 @@ def main():
     h = BinaryHeap()
     # h.push([2, 40, 2, 40, 1, 4, 1, 3, 4, 5])
     h.push([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+    h.draw()
+    _ = h.pop()
+    h.draw()
+    _ = h.pop()
+    h.draw()
+    _ = h.pop()
+    h.draw()
+    _ = h.pop()
     h.draw()
 
 
