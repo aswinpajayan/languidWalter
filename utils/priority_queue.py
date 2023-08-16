@@ -6,7 +6,7 @@ from matplotlib.patches import ConnectionPatch
 
 class BinaryHeap():
     radius = 1
-    spacing = 2 * radius
+    spacing = 4 * radius
     color = "blue"
     hl1 = "green"
     hh2 = "red"
@@ -26,21 +26,31 @@ class BinaryHeap():
                 self.heap[parent] >= self.heap[index]
 
     def swap(self, index1, index2):
-        self.heap[index1], self.heap[index2] = self.heap[index2], self.heap[index1]
+        self.heap[index1], self.heap[index2] = self.heap[index2],\
+                self.heap[index1]
 
     def bubble(self, index):
         if index == 0:
             return
         parent = (index - 1) // 2
+        if index % 2 == 0:
+            if not self.heap_condition(index-1, index):
+                self.swap(index-1, index)
+                index = index-1
         if not self.heap_condition(parent, index):
             self.swap(parent, index)
             self.bubble(parent)
 
-    def push(self, element):
-        self.heap.append(element)
-        self.bubble(self.len)
-        self.len += 1
-        print(self.heap, self.len)
+    def push(self, elements):
+        if type(elements) == list:
+            for element in elements:
+                self.heap.append(element)
+                self.bubble(self.len)
+                self.len += 1
+        else:
+            self.heap.append(elements)
+            self.bubble(self.len)
+            self.len += 1
 
     def draw(self):
 
@@ -49,70 +59,49 @@ class BinaryHeap():
         # Create a figure and axis for plotting
         fig, ax = plt.subplots()
         border = 1
-        level = 1
+        level = 0
+        off_table = []
 
-        cur_off = np.ceil(np.log2(self.len + 1))
-
-        levels = np.log2(self.len + 2)
+        offset = 2 ** (np.ceil(np.log2(self.len + 1))) * 2 * BinaryHeap.radius
+        cur_off = offset
         visited = []
         for index, node in enumerate(self.heap):
             if index in visited:
                 continue
-            parent = index - 1 // 2
-            # Draw edges 
-            # if index % 2 == 1:
-            #     # left node
-            #     node = plt.Circle((offset - (index // 2) * BinaryHeap.spacing,
-            #                        height - (index // 2) * BinaryHeap.spacing),
-            #                       BinaryHeap.radius, linewidth=2,
-            #                       edgecolor='black',
-            #                       facecolor=BinaryHeap.color)
-            #     con = ConnectionPatch(xyA=(height, offset),
-            #                           xyB=(0.5, 0.75),
-            #                           coordsA="data", coordsB="data",
-            #                           arrowstyle="-|>", mutation_scale=15,
-            #                           color="black")
-            # else:
-            #     if index != 0:
-            #         con = ConnectionPatch(xyA=(height, offset),
-            #                               xyB=(0.5, 0.75),
-            #                               coordsA="data",
-            #                               coordsB="data",
-            #                               arrowstyle="-|>", mutation_scale=15,
-            #                               color="black")
-            #     node = plt.Circle((offset + (index // 2) * BinaryHeap.spacing,
-            #                        height - (index // 2) * BinaryHeap.spacing),
-            #                       BinaryHeap.radius, linewidth=2,
-            #                       edgecolor='black',
-            #                       facecolor=BinaryHeap.color)
-
+            parent = (index - 1) // 2
             if index + 1 == border:
-                l_off = cur_off // 2
+                l_off = cur_off // 4
                 border *= 2
                 level += 1
                 cur_off = cur_off // 2
             else:
                 l_off += cur_off
-            print(index, l_off,  level, border, cur_off)
 
             node = plt.Circle((l_off,
-                               (height - level) * BinaryHeap.spacing),
+                               height - level * BinaryHeap.spacing),
                               BinaryHeap.radius, linewidth=2,
                               edgecolor='black',
                               facecolor=BinaryHeap.color)
-            con = ConnectionPatch(xyA=(height, offset),
-                                  xyB=(0.5, 0.75),
-                                  coordsA="data", coordsB="data",
-                                  arrowstyle="-|>", mutation_scale=15,
-                                  color="black")
-
             ax.add_patch(node)
-            ax.text(l_off, (height - level) * BinaryHeap.spacing, self.heap[index], fontsize=10, ha='center', color='white')
+            ax.text(l_off, height - level * BinaryHeap.spacing,
+                    self.heap[index], fontsize=10, ha='center', color='white')
+            off_table.append(np.array(
+                [l_off, height - level * BinaryHeap.spacing]))
+            if index != 0:
+                con = ConnectionPatch(xyA=off_table[parent]
+                                      + (0, -BinaryHeap.radius),
+                                      xyB=off_table[index]
+                                      + (0, BinaryHeap.radius),
+                                      coordsA="data", coordsB="data",
+                                      arrowstyle="-|>", mutation_scale=15,
+                                      color="black")
+                ax.add_patch(con)
+
             visited.append(index)
-        # Set the aspect ratio and axis limits to make the icon look like a camera
+        # Set the aspect ratio and axis limits
         ax.set_aspect('equal', adjustable='box')
-        ax.set_xlim(-20, 20)
-        ax.set_ylim(-20, 20)
+        ax.set_xlim(0, offset // 2)
+        ax.set_ylim(-2 * BinaryHeap.radius, height)
 
         # Remove axis ticks and labels
         ax.axis('off')
@@ -124,12 +113,8 @@ class BinaryHeap():
 
 def main():
     h = BinaryHeap()
-    h.push(10)
-    h.push(3)
-    h.push(20)
-    h.push(2)
-    h.push(40)
-    h.push(1)
+    # h.push([2, 40, 2, 40, 1, 4, 1, 3, 4, 5])
+    h.push([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
     h.draw()
 
 
