@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import ConnectionPatch
 
 
-class BinaryHeap():
+class PriorityQueue():
     radius = 1
     spacing = 4 * radius
     color = "blue"
@@ -70,15 +70,15 @@ class BinaryHeap():
 
     def draw(self):
 
-        height = np.ceil(np.log2(self.len + 1)) * BinaryHeap.spacing
-        offset = np.ceil(np.log2(self.len + 1)) * BinaryHeap.spacing
+        height = np.ceil(np.log2(self.len + 1)) * PriorityQueue.spacing
+        offset = np.ceil(np.log2(self.len + 1)) * PriorityQueue.spacing
         # Create a figure and axis for plotting
         fig, ax = plt.subplots()
         border = 1
         level = 0
         off_table = []
 
-        offset = 2 ** (np.ceil(np.log2(self.len + 1))) * 2 * BinaryHeap.radius
+        offset = 2 ** (np.ceil(np.log2(self.len + 1))) * 2 * PriorityQueue.radius
         cur_off = offset
         visited = []
         for index in range(self.len):
@@ -94,20 +94,20 @@ class BinaryHeap():
                 l_off += cur_off
 
             node = plt.Circle((l_off,
-                               height - level * BinaryHeap.spacing),
-                              BinaryHeap.radius, linewidth=2,
+                               height - level * PriorityQueue.spacing),
+                              PriorityQueue.radius, linewidth=2,
                               edgecolor='black',
-                              facecolor=BinaryHeap.color)
+                              facecolor=PriorityQueue.color)
             ax.add_patch(node)
-            ax.text(l_off, height - level * BinaryHeap.spacing,
+            ax.text(l_off, height - level * PriorityQueue.spacing,
                     self.heap[index], fontsize=10, ha='center', color='white')
             off_table.append(np.array(
-                [l_off, height - level * BinaryHeap.spacing]))
+                [l_off, height - level * PriorityQueue.spacing]))
             if index != 0:
                 con = ConnectionPatch(xyA=off_table[parent]
-                                      + (0, -BinaryHeap.radius),
+                                      + (0, -PriorityQueue.radius),
                                       xyB=off_table[index]
-                                      + (0, BinaryHeap.radius),
+                                      + (0, PriorityQueue.radius),
                                       coordsA="data", coordsB="data",
                                       arrowstyle="-|>", mutation_scale=15,
                                       color="black")
@@ -117,7 +117,7 @@ class BinaryHeap():
         # Set the aspect ratio and axis limits
         ax.set_aspect('equal', adjustable='box')
         ax.set_xlim(0, offset // 2)
-        ax.set_ylim(-2 * BinaryHeap.radius, height)
+        ax.set_ylim(-2 * PriorityQueue.radius, height)
 
         # Remove axis ticks and labels
         ax.axis('off')
@@ -128,8 +128,7 @@ class BinaryHeap():
 
 
 def main():
-    h = BinaryHeap()
-    # h.push([2, 40, 2, 40, 1, 4, 1, 3, 4, 5])
+    h = PriorityQueue()
     h.push([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
     h.draw()
     _ = h.pop()
